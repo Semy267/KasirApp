@@ -19,3 +19,7 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.smooth_transition {
+  @apply transition-all duration-300 ease-in-out;
+}
