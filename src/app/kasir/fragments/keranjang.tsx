@@ -1,8 +1,14 @@
 "use client";
 import { Product } from "@/API/products";
-import { CldImage } from "next-cloudinary";
+import { IconChevronLeft, IconTrash } from "@tabler/icons-react";
 
-export default function Keranjang({ cart }: { cart: Product[] }) {
+export default function Keranjang({
+  cart,
+  updateCart,
+}: {
+  cart: Product[];
+  updateCart: (products: Product[]) => void;
+}) {
   return (
     <div className="overflow-x-auto">
       <table className="table">
@@ -18,30 +24,30 @@ export default function Keranjang({ cart }: { cart: Product[] }) {
           {cart.map((product) => (
             <tr key={product.id}>
               <th>
-                <div className="flex items-center rounded-full px-2 py-1 bg-warning">
-                    1
+                <div className="flex gap-1 items-center">
+                  <IconChevronLeft
+                    stroke={2}
+                    onClick={() => {
+                      if (product.quantity && product.quantity > 1) {
+                        updateCart(
+                          cart.map((item) =>
+                            item.id === product.id
+                              ? { ...item, quantity: item.quantity! - 1 }
+                              : item
+                          )
+                        );
+                      } else {
+                        updateCart(cart.filter((item) => item.id !== product.id));
+                      }
+                    }}
+                  />
+                  {product.quantity}
                 </div>
               </th>
               <td>
                 <div className="flex items-center gap-3">
-                  <div className="avatar">
-                    <div className="mask mask-squircle h-12 w-12">
-                      <CldImage
-                        src={product.image} // Use this sample image or upload your own via the Media Explorer
-                        width="500" // Transform the image: auto-crop to square aspect_ratio
-                        height="500"
-                        alt="cld-sample-5"
-                        crop={{
-                          type: "auto",
-                          source: true,
-                        }}
-                      />
-                    </div>
-                  </div>
                   <div>
-                    <div className="font-bold line-clamp-2">
-                      {product.name}
-                    </div>
+                    <div className="font-bold line-clamp-2">{product.name}</div>
                   </div>
                 </div>
               </td>
@@ -49,8 +55,15 @@ export default function Keranjang({ cart }: { cart: Product[] }) {
                 {new Intl.NumberFormat("id-ID", {
                   style: "currency",
                   currency: "IDR",
-                }).format(product.price)}
+                }).format(product.price * (product.quantity || 1))}
                 <br />
+              </td>
+              <td>
+                <div className="flex items-center gap-3">
+                  <div>
+                    <IconTrash stroke={2} onClick={() => updateCart(cart.filter((item) => item.id !== product.id))} />
+                  </div>
+                </div>
               </td>
             </tr>
           ))}

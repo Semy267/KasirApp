@@ -8,6 +8,7 @@ export interface Product {
   type: string;
   id: string;
   badge: string;
+  quantity?: number;
 }
 
 export async function fetchProducts(type?: string): Promise<Product[]> {
